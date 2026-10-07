@@ -1,0 +1,28 @@
+require('dotenv').config();
+const fs = require('fs');
+const path = require('path');
+const { Client } = require('pg');
+
+async function main() {
+  const client = new Client({
+    host: process.env.DB_HOST || 'localhost',
+    port: Number(process.env.DB_PORT || 5432),
+    database: process.env.DB_NAME || 'verkbok',
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || 'postgres'
+  });
+
+  try {
+    await client.connect();
+    const schema = fs.readFileSync(path.join(__dirname, '../db/schema.sql'), 'utf8');
+    await client.query(schema);
+    console.log('Database initialized successfully');
+  } catch (error) {
+    console.error('Failed to initialize database:', error.message);
+    process.exit(1);
+  } finally {
+    await client.end();
+  }
+}
+
+main();
