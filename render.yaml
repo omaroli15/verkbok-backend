@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: verkbok-api
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: verkbok-db
+          property: connectionString
+      - key: CLIENT_URL
+        value: https://verkbok.netlify.app
+
+  - type: pserv
+    name: verkbok-db
+    plan: free
+    ipAllowList: []
+    postgreSQLVersion: 16
